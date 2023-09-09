@@ -14,10 +14,13 @@ Report database: [pagila](https://www.postgresql.org/ftp/projects/pgFoundry/dbsa
 The sample scheduler can generate reports everyday in the specified time. PostgreSQL is being used to store data for reports. In SQLite3 credential of senders mail, credential of PostgreSQL,  list of receiver mails, subject text, body text in html format, stored procedures are stored. Implemented AES-256 based encrypt and decryptfor some sensitive credentials. Can easily be implemented for encrypting for all the credential.
 
 creating ```reports``` table in SQLite:
--- reports definition
+
 ```
 CREATE TABLE reports(id text, report_name text, database_type text, ip_port text,database_creds text,sender_creds text,to_mail text, cc text, bcc TEXT, subject text, body text,date_time text, query text);
 ```
+
+
+-- reports definition
 
 id - {id of report}\
 report_name - {genrated report file name}\
