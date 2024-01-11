@@ -3,7 +3,7 @@
 Test environment:
 
 Ubuntu 20.04.6 LTS\
-Python 3.10\
+Python  3.11.5\
 [APScheduler](https://github.com/agronholm/apscheduler) 3.10.4\
 SQLite3: A lightweight C-language library. It comes preinstalled with Python Standard Library as sqlite3 module. So it can be used without any separate installation.\
 PostgreSQL\
