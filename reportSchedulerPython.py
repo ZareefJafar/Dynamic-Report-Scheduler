@@ -51,7 +51,7 @@ def get_secret_key(password, salt):
 
 sched = BlockingScheduler()
 
-def report(unlockKey, record):
+def report_pass(unlockKey, record):
 
 
     Previous_Date = datetime.datetime.today() - datetime.timedelta(days=1)
@@ -165,7 +165,114 @@ def report(unlockKey, record):
 
 
 
+def report(record):
 
+
+    Previous_Date = datetime.datetime.today() - datetime.timedelta(days=1)
+    Previous_Date_Formatted = Previous_Date.strftime ('%Y%m%d') # format the date to ddmmyyyy
+
+    
+    server_creds = record['ip_port'].split(',')     
+
+
+
+    print("SERVER: ",server_creds)
+    database_creds = record['database_creds'].split(',')
+    sender_creds = record['sender_creds'].split(',')
+    to_list = record['to_mail']
+    cc_list = record['cc']
+    bcc_list = record['bcc']
+    report_name = record['report_name']+'_'+Previous_Date_Formatted+'.csv'
+    query = record['query']
+
+
+
+    sender_address = sender_creds[0]
+    password =sender_creds[1]
+    to = to_list
+    cc = cc_list
+    bcc = bcc_list
+
+    
+
+
+    conn = psycopg2.connect(
+    host=server_creds[0],
+    database=database_creds[2],
+    user=database_creds[0],
+    password=database_creds[1],
+    port=server_creds[1])
+
+
+    # Open the file
+    f = open('/home/zareef/projects/reportSched/'+ report_name , 'w')
+    # Create a connection and get a cursor
+    curReport = conn.cursor()
+    # Execute the query
+    curReport.execute(query)
+    # Get Header Names (without tuples)
+    colnames = [desc[0] for desc in curReport.description]
+    # Get data in batches
+    while True:
+        # Read the data
+        df = pd.DataFrame(curReport.fetchall())
+        # We are done if there are no data
+        if len(df) == 0:
+            break
+        # Let us write to the file
+        else:
+            df.to_csv(f, header=colnames)
+
+    # Clean up
+    f.close()
+    curReport.close()
+
+
+
+    message = MIMEMultipart("")
+    message["Subject"] = record['subject']
+    message["From"] = sender_address
+    message["To"] = to
+    message['Cc'] = cc
+    message['Bcc'] = bcc
+
+
+    # Create the HTML version of your message
+    html = record['body']
+
+    # Create both plain and HTML text objects
+    body = MIMEText(html, "html")
+
+
+
+
+
+    attachment = open('/home/zareef/projects/reportSched/'+ report_name , "rb")
+
+
+    obj = MIMEBase('application','octet-stream')
+    name=report_name
+    print(name)
+    obj.set_payload((attachment).read())
+    encoders.encode_base64(obj)
+    obj.add_header('Content-Disposition',"attachment",filename=name)
+
+    message.attach(obj)
+
+
+    # Attach both versions to the outgoing message
+    message.attach(body)
+
+    # Send the email with your SMTP server
+    context = ssl.create_default_context()
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+        server.login(sender_address, password)
+        server.sendmail(
+            sender_address, to, message.as_string()
+        )
+
+
+    print("YOUR MAIL HAS BEEN SENT SUCCESSFULLY")
 
 
 
@@ -179,10 +286,11 @@ if __name__ == '__main__':
         
 
         
-        db = sqlite3.connect("creds.db")
+        db = sqlite3.connect("creads.db")
         curCreds = db.cursor()
         res = curCreds.execute("select * from reports").fetchall()
-        rec = dict(zip([c[0] for c in curCreds.description], res[0]))
+        rec1 = dict(zip([c[0] for c in curCreds.description], res[0]))
+        rec2 = dict(zip([c[0] for c in curCreds.description], res[1]))
         print(rec)
         curCreds.close()
 
@@ -191,6 +299,7 @@ if __name__ == '__main__':
     except (Exception, psycopg2.Error) as error:
         print("Error while fetching data from Database", error)
 
-    sched.add_job(report, 'cron', hour='13', minute= '45', args=(key,rec,))
+    sched.add_job(report, 'cron', hour='3', minute= '40', args=(rec1,))
+    sched.add_job(report, 'cron', hour='3', minute= '39', args=(rec2,))
 
     sched.start()
