@@ -205,7 +205,7 @@ def report(record):
 
 
     # Open the file
-    f = open('/home/zareef/projects/reportSched/'+ report_name , 'w')
+    f = open('/home/zareef/projects/reportScheduler/reports/'+ report_name , 'w')
     # Create a connection and get a cursor
     curReport = conn.cursor()
     # Execute the query
@@ -247,7 +247,7 @@ def report(record):
 
 
 
-    attachment = open('/home/zareef/projects/reportSched/'+ report_name , "rb")
+    attachment = open('/home/zareef/projects/reportScheduler/reports/'+ report_name , "rb")
 
 
     obj = MIMEBase('application','octet-stream')
@@ -299,7 +299,7 @@ if __name__ == '__main__':
     except (Exception, psycopg2.Error) as error:
         print("Error while fetching data from Database", error)
 
-    sched.add_job(report, 'cron', hour='3', minute= '40', args=(rec1,))
-    sched.add_job(report, 'cron', hour='3', minute= '39', args=(rec2,))
+    sched.add_job(report, 'cron', hour='17', minute= '04', args=(rec1,))
+    sched.add_job(report, 'cron', hour='17', minute= '04', args=(rec2,))
 
     sched.start()
