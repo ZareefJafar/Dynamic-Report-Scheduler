@@ -179,9 +179,9 @@ def report(record):
     print("SERVER: ",server_creds)
     database_creds = record['database_creds'].split(',')
     sender_creds = record['sender_creds'].split(',')
-    to_list = record['to_mail']
-    cc_list = record['cc']
-    bcc_list = record['bcc']
+    to = record['to_mail']
+    cc = record['cc']
+    bcc = record['bcc']
     report_name = record['report_name']+'_'+Previous_Date_Formatted+'.csv'
     query = record['query']
 
@@ -189,9 +189,7 @@ def report(record):
 
     sender_address = sender_creds[0]
     password =sender_creds[1]
-    to = to_list
-    cc = cc_list
-    bcc = bcc_list
+
 
     
 
@@ -263,12 +261,23 @@ def report(record):
     # Attach both versions to the outgoing message
     message.attach(body)
 
+    to_list=[]
+    cc_list=[]
+    bcc_list=[]
+    if to != None:
+        to_list=to.split(',')
+    if cc != None:
+        cc_list=cc.split(',')
+    if bcc != None:
+        bcc_list=bcc.split(',')
+    toAddress = to_list + cc_list + bcc_list
+    print(toAddress)
     # Send the email with your SMTP server
     context = ssl.create_default_context()
     with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
         server.login(sender_address, password)
         server.sendmail(
-            sender_address, to, message.as_string()
+            sender_address, toAddress, message.as_string()
         )
 
 
@@ -277,7 +286,7 @@ def report(record):
 
 
 if __name__ == '__main__':
-    key = input("Enter pass: ")
+    # key = input("Enter pass: ")
 
 
     rec={}
@@ -299,7 +308,7 @@ if __name__ == '__main__':
     except (Exception, psycopg2.Error) as error:
         print("Error while fetching data from Database", error)
 
-    sched.add_job(report, 'cron', hour='17', minute= '04', args=(rec1,))
+    sched.add_job(report, 'cron', hour='19', minute= '41', args=(rec1,))
     sched.add_job(report, 'cron', hour='17', minute= '04', args=(rec2,))
 
     sched.start()
