@@ -2,9 +2,12 @@
 
 ### Test environment:
 
-OS: Ubuntu 20.04.6 LTS\
-Python version:  3.11.5\
-Databases: SQLite3 (for credentials and queries) , PostgreSQL (reports data)
+**OS**:              Ubuntu 20.04.6 LTS\
+**Python version**:  3.11.5\
+**SQLite3**:         For credentials and queries. No need for a separate setup. 
+                     Comes with python by default.  
+                     Need a GUI tool like [DB Browser](https://sqlitebrowser.org/) for editing SQLite.\
+**PostgreSQL**:      For report data
 
 ### Sample Report database:
 [DVD rental database](https://www.postgresqltutorial.com/postgresql-getting-started/postgresql-sample-database/)
@@ -15,8 +18,19 @@ Databases: SQLite3 (for credentials and queries) , PostgreSQL (reports data)
 [pycryptodome](https://github.com/Legrandin/pycryptodome) : For AES-256 Encryption and Decryption.\
 [pycrypto](https://anaconda.org/anaconda/pycrypto)
 
-The sample scheduler can generate reports everyday in the specified time. PostgreSQL is being used to store data for reports. In SQLite3 credential of senders mail, credential of PostgreSQL,  list of receiver mails, subject text, body text in html format, stored procedures are stored.\
-Optional: AES-256 based encrypt and decryptfor some sensitive credentials. 
+Features:
+* Generate reports everyday in the specified time in SQLite3 database table.\
+* Optional AES-256 based encrypt and decrypt for some sensitive credentials.\
+* Adding a new record with all the specifications to SQLite3 database dynamically creates a new job to be scheduled.\
+* Can pool data from any number of database servers.
+
+
+Upcoming features:
+* Support for Microsoft SQL Server, MySQL
+* Schedule SFTP Upload and Download 
+* Support for Monthly, yearly, weekly and more custom intervals
+
+PostgreSQL is being used to store data for reports.
 
 
 creating ```reports``` table in SQLite:
@@ -43,3 +57,5 @@ date_time -      {trigger date time}
 query -          {sql query for report/Stored Procedures}
 
 ```
+
+If you want to contribute please read the CONTRIBUTING.md
