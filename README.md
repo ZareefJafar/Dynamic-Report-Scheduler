@@ -26,7 +26,7 @@ Features:
 
 
 Upcoming features:
-* Support for Microsoft SQL Server, MySQL
+* Add support for Microsoft SQL Server, MySQL
 * Schedule SFTP Upload and Download 
 * Support for Monthly, yearly, weekly and more custom intervals
 
