@@ -21,7 +21,7 @@
 Features:
 * Generate reports everyday in the specified time in SQLite3 database table.
 * Optional AES-256 based encrypt and decrypt for some sensitive credentials.
-* Adding a new record with all the specifications to SQLite3 database dynamically creates a new job to be scheduled.
+* Fetch job specifications from the SQLite3 database table and create scheduled jobs dynamically.
 * Can pool data from any number of database servers.
 
 
