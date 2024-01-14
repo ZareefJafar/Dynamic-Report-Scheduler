@@ -19,18 +19,18 @@
 [pycrypto](https://anaconda.org/anaconda/pycrypto)
 
 Features:
-* Generate reports everyday in the specified time in SQLite3 database table.
+* Extracts unique specifications for report generation tasks from a centralized SQLite3 table.
+* Dynamically creates and schedules jobs based on extracted specifications.
 * Optional AES-256 based encrypt and decrypt for some sensitive credentials.
-* Fetch job specifications from the SQLite3 database table and create scheduled jobs dynamically.
-* Can pool data from any number of database servers.
+* Can pool data from an unlimited number of database servers.
 
 
 Upcoming features:
-* Add support for Microsoft SQL Server, MySQL
-* Schedule SFTP Upload and Download 
-* Support for Monthly, yearly, weekly and more custom intervals
+* Add options for Microsoft SQL Server and MySQL support for report data (PostgreSQL is currently implemented).
+* Enable uploading and downloading reports from FTP and SFTP servers.
+* Support for monthly, yearly, weekly, and custom intervals for enhanced task management.
 
-PostgreSQL is being used to store data for reports.
+
 
 
 creating ```reports``` table in SQLite:
