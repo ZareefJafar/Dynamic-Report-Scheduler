@@ -19,9 +19,9 @@
 [pycrypto](https://anaconda.org/anaconda/pycrypto)
 
 Features:
-* Generate reports everyday in the specified time in SQLite3 database table.\
-* Optional AES-256 based encrypt and decrypt for some sensitive credentials.\
-* Adding a new record with all the specifications to SQLite3 database dynamically creates a new job to be scheduled.\
+* Generate reports everyday in the specified time in SQLite3 database table.
+* Optional AES-256 based encrypt and decrypt for some sensitive credentials.
+* Adding a new record with all the specifications to SQLite3 database dynamically creates a new job to be scheduled.
 * Can pool data from any number of database servers.
 
 
