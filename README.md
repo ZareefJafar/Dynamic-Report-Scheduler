@@ -33,7 +33,7 @@ Upcoming features:
 
 
 
-creating ```reports``` table for creads.db database in SQLite:
+creating ```reports``` table of ```creads.db``` SQLite database:
 
 ```
 CREATE TABLE reports(id text, report_name text, database_type text, ip_port text,database_creds text,sender_creds text,to_mail text, cc text, bcc TEXT, subject text, body text,date_time text, query text);
