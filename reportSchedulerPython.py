@@ -9,6 +9,9 @@ from email.mime.base import MIMEBase
 from email import encoders
 import psycopg2
 import psycopg2.extras
+import pyodbc
+import mysql.connector
+from mysql.connector import Error
 import datetime
 import pandas as pd
 import base64
@@ -149,7 +152,6 @@ def report(record):
         '%Y%m%d')  # format the date to ddmmyyyy
 
     server_creds = record['ip_port'].split(',')
-
     database_creds = record['database_creds'].split(',')
     sender_creds = record['sender_creds'].split(',')
     to = record['to_mail']
@@ -161,12 +163,32 @@ def report(record):
     sender_address = sender_creds[0]
     password = sender_creds[1]
 
-    conn = psycopg2.connect(
-        host=server_creds[0],
-        database=database_creds[2],
-        user=database_creds[0],
-        password=database_creds[1],
-        port=server_creds[1])
+    databaseType = record["database_type"].lower()
+
+    match databaseType:
+        case "postgresql":
+            conn = psycopg2.connect(
+                host=server_creds[0],
+                database=database_creds[2],
+                user=database_creds[0],
+                password=database_creds[1],
+                port=server_creds[1])
+        # case "mssql":
+        #     conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};\
+        #             SERVER='+server_creds[0]+';\
+        #             DATABASE='+database_creds[2]+';\
+        #             UID='+database_creds[0]+';\
+        #             PWD='+ database_creds[1])
+            
+        case "mysql":
+            conn = mysql.connector.connect(host=server_creds[0],
+                                        database=database_creds[2],
+                                        user=database_creds[0],
+                                        password=database_creds[1],
+                                        port=server_creds[1])
+
+
+
 
     # Open the file
     f = open('/home/zareef/projects/reportScheduler/reports/' + report_name, 'w')

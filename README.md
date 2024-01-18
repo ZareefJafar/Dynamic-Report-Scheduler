@@ -7,16 +7,15 @@
 **SQLite3**:         For credentials and queries. No need for a separate setup. 
                      Comes with python by default.  
                      Need a GUI tool like [DB Browser](https://sqlitebrowser.org/) for editing SQLite.\
-**PostgreSQL**:      For report data
+**PostgreSQL/MySQL**:      For report data
 
 ### Sample Report database:
 [DVD rental database](https://www.postgresqltutorial.com/postgresql-getting-started/postgresql-sample-database/)
 
 
 ### Libraries:
-[APScheduler](https://github.com/agronholm/apscheduler) 3.10.4\
-[pycryptodome](https://github.com/Legrandin/pycryptodome) : For AES-256 Encryption and Decryption.\
-[pycrypto](https://anaconda.org/anaconda/pycrypto)
+[APScheduler](https://github.com/agronholm/apscheduler) 3.11.5\
+[pycrypto](https://anaconda.org/anaconda/pycrypto) : For AES-256 Encryption and Decryption.
 
 Features:
 * Extracts unique specifications for report generation tasks from a centralized SQLite3 table.
@@ -26,7 +25,7 @@ Features:
 
 
 Upcoming features:
-* Add options for Microsoft SQL Server and MySQL support for report data (PostgreSQL is currently implemented).
+* Add options for Microsoft SQL Server for report data storage (PostgreSQL and MySQL are currently implemented and tested).
 * Enable uploading and downloading reports from FTP and SFTP servers.
 * Support for monthly, yearly, weekly, and custom intervals for enhanced task management.
 
@@ -36,7 +35,22 @@ Upcoming features:
 creating ```reports``` table of ```creads.db``` SQLite database:
 
 ```
-CREATE TABLE reports(id text, report_name text, database_type text, ip_port text,database_creds text,sender_creds text,to_mail text, cc text, bcc TEXT, subject text, body text,date_time text, query text);
+CREATE TABLE "reports" (
+	"id"	text,
+	"report_name"	text,
+	"database_type"	text,
+	"ip_port"	text,
+	"database_creds"	text,
+	"sender_creds"	text,
+	"receiver_type"	TEXT,
+	"to_mail"	text,
+	"cc"	text,
+	"bcc"	TEXT,
+	"subject"	text,
+	"body"	text,
+	"date_time"	text,
+	"query"	text
+);
 ```
 
 
