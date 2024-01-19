@@ -7,7 +7,7 @@
 **SQLite3**:         For credentials and queries. No need for a separate setup. 
                      Comes with python by default.  
                      Need a GUI tool like [DB Browser](https://sqlitebrowser.org/) for editing SQLite.\
-**PostgreSQL/MySQL**:      For report data
+**PostgreSQL, MySQL**:      For report data
 
 ### Sample Report database:
 [DVD rental database](https://www.postgresqltutorial.com/postgresql-getting-started/postgresql-sample-database/)
@@ -62,6 +62,7 @@ database_type -  {type of database. e.g. postgresql, mssql, mysql where report d
 ip_port -        {ip and port of database server. e.g. 127.0.0.1,5432}
 database_creds - {username,password,database_name}
 sender_creds -   {gmail_id,Gmail_App_Password}
+receiver_type -  {mail/sftp server/sms/......}
 to_mail -        {mail_id1,mail_id2,mail_id3.....}
 cc -             {mail_id1,mail_id2,mail_id3.....}
 bcc -            {mail_id1,mail_id2,mail_id3.....}
