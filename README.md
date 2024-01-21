@@ -1,5 +1,8 @@
 # Dynamic-Report-Scheduler
 
+Scheduling report generation and automatic delivery.
+
+
 ### Test environment:
 
 **OS**:              Ubuntu 20.04.6 LTS\
@@ -20,14 +23,15 @@
 Features:
 * Extracts unique specifications for report generation tasks from a centralized SQLite3 table.
 * Dynamically creates and schedules jobs based on extracted specifications.
+* Generate reports and send them via email.
+* Uploloading reports to SFTP servers.
 * Optional AES-256 based encrypt and decrypt for some sensitive credentials.
 * Can pool data from an unlimited number of database servers.
 
 
 Upcoming features:
 * Add options for Microsoft SQL Server for report data storage (PostgreSQL and MySQL are currently implemented and tested).
-* Enable uploading and downloading reports from FTP and SFTP servers.
-* Support for monthly, yearly, weekly, and custom intervals for enhanced task management.
+* Instructions for monthly, yearly, weekly, and more custom intervals.
 
 
 
@@ -42,6 +46,7 @@ CREATE TABLE "reports" (
 	"ip_port"	text,
 	"database_creds"	text,
 	"sender_creds"	text,
+	"receiver_creds"	TEXT,
 	"receiver_type"	TEXT,
 	"to_mail"	text,
 	"cc"	text,
@@ -50,7 +55,7 @@ CREATE TABLE "reports" (
 	"body"	text,
 	"date_time"	text,
 	"query"	text
-);
+)
 ```
 
 
@@ -62,6 +67,7 @@ database_type -  {type of database. e.g. postgresql, mssql, mysql where report d
 ip_port -        {ip and port of database server. e.g. 127.0.0.1,5432}
 database_creds - {username,password,database_name}
 sender_creds -   {gmail_id,Gmail_App_Password}
+receiver_creds	 {sftp_ip,user_name,sftp_password,save_location},
 receiver_type -  {mail/sftp server/sms/......}
 to_mail -        {mail_id1,mail_id2,mail_id3.....}
 cc -             {mail_id1,mail_id2,mail_id3.....}

@@ -350,21 +350,75 @@ class Sftp:
             raise Exception(err)
         
 
+def sftp_upload(record):
 
 
-def sftp_upload(SFTPTOGO_URL):
-    sftp_url = os.environ.get(SFTPTOGO_URL)
+    Previous_Date = datetime.datetime.today() - datetime.timedelta(days=1)
+    Previous_Date_Formatted = Previous_Date.strftime(
+        '%Y%m%d')  # format the date to ddmmyyyy
 
-    if not sftp_url:
-        print("First, please set environment variable SFTPTOGO_URL and try again.")
-        exit(0)
+    server_creds = record['ip_port'].split(',')
+    database_creds = record['database_creds'].split(',')
+    report_name = record['report_name']+'_'+Previous_Date_Formatted+'.csv'
+    query = record['query']
 
-    parsed_url = urlparse(sftp_url)
+
+    databaseType = record["database_type"].lower()
+
+    match databaseType:
+        case "postgresql":
+            conn = psycopg2.connect(
+                host=server_creds[0],
+                database=database_creds[2],
+                user=database_creds[0],
+                password=database_creds[1],
+                port=server_creds[1])
+        # case "mssql":
+        #     conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};\
+        #             SERVER='+server_creds[0]+';\
+        #             DATABASE='+database_creds[2]+';\
+        #             UID='+database_creds[0]+';\
+        #             PWD='+ database_creds[1])
+            
+        case "mysql":
+            conn = mysql.connector.connect(host=server_creds[0],
+                                        database=database_creds[2],
+                                        user=database_creds[0],
+                                        password=database_creds[1],
+                                        port=server_creds[1])
+
+
+
+
+    # Open the file
+    f = open('/home/zareef/projects/reportScheduler/reports/' + report_name, 'w')
+    # Create a connection and get a cursor
+    curReport = conn.cursor()
+    # Execute the query
+    curReport.execute(query)
+    # Get Header Names (without tuples)
+    colnames = [desc[0] for desc in curReport.description]
+    # Get data in batches
+    while True:
+        # Read the data
+        df = pd.DataFrame(curReport.fetchall())
+        # We are done if there are no data
+        if len(df) == 0:
+            break
+        # Let us write to the file
+        else:
+            df.to_csv(f, header=colnames)
+
+    # Clean up
+    f.close()
+    curReport.close()
+
+    sftp_creds = record['receiver_creds'].split(',')
 
     sftp = Sftp(
-        hostname=parsed_url.hostname,
-        username=parsed_url.username,
-        password=parsed_url.password,
+        hostname=sftp_creds[0],
+        username=sftp_creds[1],
+        password=sftp_creds[2],
     )
 
     # Connect to SFTP
@@ -377,8 +431,8 @@ def sftp_upload(SFTPTOGO_URL):
         print(file.filename, file.st_mode, file.st_size, file.st_atime, file.st_mtime)
 
     # Upload files to SFTP location from local
-    local_path = "/Users/saggi/Downloads/tls2.png"
-    remote_path = "/tls2.png"
+    local_path = '/home/zareef/projects/reportScheduler/reports/' + report_name
+    remote_path = sftp_creds[3]+report_name
     sftp.upload(local_path, remote_path)
 
     # Lists files of SFTP location after upload
@@ -386,9 +440,9 @@ def sftp_upload(SFTPTOGO_URL):
     print([f for f in sftp.listdir(path)])
 
     # Download files from SFTP
-    sftp.download(
-        remote_path, os.path.join(remote_path, local_path + '.backup')
-    )
+    # sftp.download(
+    #     remote_path, os.path.join(remote_path, local_path + '.backup')
+    # )
 
     # Disconnect from SFTP
     sftp.disconnect()
@@ -412,9 +466,15 @@ if __name__ == '__main__':
 
     for i in range(len(res)):
         job_args = dict(zip([c[0] for c in curCreds.description], res[i]))
-        sched.add_job(report, 'cron',
-                      hour=job_args['date_time'].split(',')[0],
-                      minute=job_args['date_time'].split(',')[1],
-                      args=(job_args,))
+        if(job_args['receiver_type']=='email'):
+            sched.add_job(report, 'cron',
+                        hour=job_args['date_time'].split(',')[0],
+                        minute=job_args['date_time'].split(',')[1],
+                        args=(job_args,))
+        elif(job_args['receiver_type']=='sftp'):
+            sched.add_job(sftp_upload, 'cron',
+                hour=job_args['date_time'].split(',')[0],
+                minute=job_args['date_time'].split(',')[1],
+                args=(job_args,))
 
     sched.start()
