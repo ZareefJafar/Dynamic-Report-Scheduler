@@ -10,7 +10,7 @@ Scheduling report generation and automatic delivery.
 **SQLite3**:         For credentials and queries. No need for a separate setup. 
                      Comes with python by default.  
                      Need a GUI tool like [DB Browser](https://sqlitebrowser.org/) for editing SQLite.\
-**PostgreSQL, MySQL**:      For report data
+**PostgreSQL, MySQL, Microsoft SQL Server**:      For report data
 
 ### Sample Report database:
 [DVD rental database](https://www.postgresqltutorial.com/postgresql-getting-started/postgresql-sample-database/)
@@ -30,7 +30,6 @@ Features:
 
 
 Upcoming features:
-* Add options for Microsoft SQL Server for report data storage (PostgreSQL and MySQL are currently implemented and tested).
 * Instructions for monthly, yearly, weekly, and more custom intervals.
 
 
