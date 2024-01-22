@@ -62,12 +62,12 @@ class Mail:
                     user=database_creds[0],
                     password=database_creds[1],
                     port=server_creds[1])
-            # case "mssql":
-            #     conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};\
-            #             SERVER='+server_creds[0]+';\
-            #             DATABASE='+database_creds[2]+';\
-            #             UID='+database_creds[0]+';\
-            #             PWD='+ database_creds[1])
+            case "mssql":
+                conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};\
+                        SERVER='+server_creds[0]+';\
+                        DATABASE='+database_creds[2]+';\
+                        UID='+database_creds[0]+';\
+                        PWD='+ database_creds[1])
                 
             case "mysql":
                 conn = mysql.connector.connect(host=server_creds[0],
