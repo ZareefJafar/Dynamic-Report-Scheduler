@@ -16,9 +16,9 @@ from mysql.connector import Error
 import datetime
 import pandas as pd
 import base64
-from Crypto.Util.Padding import pad, unpad
-from Crypto.Cipher import AES
-from Crypto.Random import get_random_bytes
+# from Crypto.Util.Padding import pad, unpad
+# from Crypto.Cipher import AES
+# from Crypto.Random import get_random_bytes
 import hashlib
 import pysftp
 from urllib.parse import urlparse
@@ -64,10 +64,11 @@ class Mail:
                     port=server_creds[1])
             case "mssql":
                 conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};\
-                        SERVER='+server_creds[0]+';\
-                        DATABASE='+database_creds[2]+';\
-                        UID='+database_creds[0]+';\
-                        PWD='+ database_creds[1])
+                      SERVER='+server_creds[0]+';\
+                      DATABASE='+database_creds[2]+';\
+                      UID='+database_creds[0]+';\
+                      PWD='+ database_creds[1])
+
                 
             case "mysql":
                 conn = mysql.connector.connect(host=server_creds[0],
@@ -79,28 +80,23 @@ class Mail:
 
 
 
+        
         # Open the file
-        f = open('/home/zareef/projects/reportScheduler/reports/' + report_name, 'w')
-        # Create a connection and get a cursor
-        curReport = conn.cursor()
-        # Execute the query
-        curReport.execute(query)
-        # Get Header Names (without tuples)
-        colnames = [desc[0] for desc in curReport.description]
-        # Get data in batches
-        while True:
-            # Read the data
-            df = pd.DataFrame(curReport.fetchall())
-            # We are done if there are no data
-            if len(df) == 0:
-                break
-            # Let us write to the file
-            else:
-                df.to_csv(f, header=colnames)
+        file_path = '/home/zareef/projects/reportScheduler/reports/' + report_name
 
-        # Clean up
-        f.close()
-        curReport.close()
+        # Check if the file already exists and delete it
+        if os.path.exists(file_path):
+            print(report_name, " file found. Deleting...")
+            os.remove(file_path)
+        
+        # Execute the query and directly read the result into a DataFrame
+        df = pd.read_sql_query(query, conn)
+        # Save the DataFrame to a CSV file
+        df.to_csv(file_path, header=True, index=False, mode='w')
+
+        print(report_name, " created")
+
+
 
         message = MIMEMultipart("")
         message["Subject"] = self.record['subject']
@@ -140,12 +136,34 @@ class Mail:
             bcc_list = bcc.split(',')
         toAddress = to_list + cc_list + bcc_list
 
-        # Send the email with your SMTP server
-        context = ssl.create_default_context()
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
-            server.login(sender_address, password)
-            server.sendmail(
-                sender_address, toAddress, message.as_string()
-            )
 
-        print(name, " REPORT HAS BEEN SENT SUCCESSFULLY")
+        if self.record['sender_type']=='gmail':
+            host = "smtp.gmail.com"
+            port = 465
+            
+            # Send the email with your SMTP server
+            context = ssl.create_default_context()
+            with smtplib.SMTP_SSL(host, port, context=context) as server:
+                server.login(sender_address, password)
+                server.sendmail(
+                    sender_address, toAddress, message.as_string()
+                )
+
+        elif self.record['sender_type']=='outlook':
+            host = "smtp.office365.com"
+            port = 587
+
+            # Connect to the SMTP server and send the email
+            context = ssl.create_default_context()
+
+            with smtplib.SMTP(host, port) as server:
+                server.starttls(context=context)  # Use starttls for a secure connection
+                server.login(sender_address, password)
+                server.sendmail(sender_address, toAddress, message.as_string())
+
+        
+
+
+
+
+        print(name, " REPORT MAILED SUCCESSFULLY\n")

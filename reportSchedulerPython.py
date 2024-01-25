@@ -28,17 +28,18 @@ if __name__ == '__main__':
 
     for i in range(len(res)):
         job_args = dict(zip(column_names, res[i]))
+        if job_args['active'] == '1':
+            print("Active report id: "+job_args['id'])
+            if job_args['receiver_type'] == 'email':
+                mail_instance = Mail(job_args)
+                sched.add_job(mail_instance.email_dispatch, 'cron',
+                            hour=job_args['date_time'].split(',')[0],
+                            minute=job_args['date_time'].split(',')[1])
 
-        if job_args['receiver_type'] == 'email':
-            mail_instance = Mail(job_args)
-            sched.add_job(mail_instance.email_dispatch, 'cron',
-                          hour=job_args['date_time'].split(',')[0],
-                          minute=job_args['date_time'].split(',')[1])
-
-        elif job_args['receiver_type'] == 'sftp':
-            sftp_instance = Sftp(job_args)
-            sched.add_job(sftp_instance.sftp_upload, 'cron',
-                          hour=job_args['date_time'].split(',')[0],
-                          minute=job_args['date_time'].split(',')[1])
+            elif job_args['receiver_type'] == 'sftp':
+                sftp_instance = Sftp(job_args)
+                sched.add_job(sftp_instance.sftp_upload, 'cron',
+                            hour=job_args['date_time'].split(',')[0],
+                            minute=job_args['date_time'].split(',')[1])
 
     sched.start()

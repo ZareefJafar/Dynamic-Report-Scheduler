@@ -104,6 +104,7 @@ class Sftp:
 
         databaseType = self.record["database_type"].lower()
 
+
         match databaseType:
             case "postgresql":
                 conn = psycopg2.connect(
@@ -114,10 +115,11 @@ class Sftp:
                     port=server_creds[1])
             case "mssql":
                 conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};\
-                        SERVER='+server_creds[0]+';\
-                        DATABASE='+database_creds[2]+';\
-                        UID='+database_creds[0]+';\
-                        PWD='+ database_creds[1])
+                      SERVER='+server_creds[0]+';\
+                      DATABASE='+database_creds[2]+';\
+                      UID='+database_creds[0]+';\
+                      PWD='+ database_creds[1])
+
                 
             case "mysql":
                 conn = mysql.connector.connect(host=server_creds[0],
@@ -130,27 +132,19 @@ class Sftp:
 
 
         # Open the file
-        f = open('/home/zareef/projects/reportScheduler/reports/' + report_name, 'w')
-        # Create a connection and get a cursor
-        curReport = conn.cursor()
-        # Execute the query
-        curReport.execute(query)
-        # Get Header Names (without tuples)
-        colnames = [desc[0] for desc in curReport.description]
-        # Get data in batches
-        while True:
-            # Read the data
-            df = pd.DataFrame(curReport.fetchall())
-            # We are done if there are no data
-            if len(df) == 0:
-                break
-            # Let us write to the file
-            else:
-                df.to_csv(f, header=colnames)
+        file_path = '/home/zareef/projects/reportScheduler/reports/' + report_name
 
-        # Clean up
-        f.close()
-        curReport.close()
+        # Check if the file already exists and delete it
+        if os.path.exists(file_path):
+            print(report_name, " file found. Deleting...")
+            os.remove(file_path)
+        
+        # Execute the query and directly read the result into a DataFrame
+        df = pd.read_sql_query(query, conn)
+        # Save the DataFrame to a CSV file
+        df.to_csv(file_path, header=True, index=False, mode='w')
+
+        print(report_name, " created")
 
         sftp_creds = self.record['receiver_creds'].split(',')
 
