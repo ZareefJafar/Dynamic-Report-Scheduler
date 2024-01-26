@@ -55,6 +55,7 @@ CREATE TABLE "reports" (
 	"ip_port"	text,
 	"database_creds"	text,
 	"sender_creds"	text,
+	"sender_type"	TEXT,
 	"receiver_creds"	TEXT,
 	"receiver_type"	TEXT,
 	"to_mail"	text,
@@ -63,7 +64,8 @@ CREATE TABLE "reports" (
 	"subject"	text,
 	"body"	text,
 	"date_time"	text,
-	"query"	text
+	"query"	text,
+	"active"	TEXT
 )
 ```
 
@@ -85,7 +87,7 @@ subject -        {subject text}
 body -           {body in html}
 date_time -      {trigger date time}
 query -          {sql query for report/Stored Procedures}
-
+active -         {0 for inactive and 1 for active}
 ```
 
 If you want to contribute please read the CONTRIBUTING.md
