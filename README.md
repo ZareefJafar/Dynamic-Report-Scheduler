@@ -22,10 +22,10 @@ Scheduling report generation and automatic delivery.
 
 
 ```
-conda create --name shed python=3.11.5
+conda create --name sched python=3.11.5
 ```
 ```
-conda activate shed
+conda activate sched
 ```
 ```
 conda install -c conda-forge apscheduler pyodbc psycopg2 mysql-connector-python pandas pysftp
