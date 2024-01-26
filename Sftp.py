@@ -1,25 +1,25 @@
-import psycopg2
-import psycopg2.extras
-import mysql.connector
 import datetime
-import pandas as pd
-import pysftp
 import os
-import pyodbc
-
+from pathlib import Path
+import logging
+import pysftp
+import pandas as pd
+from sqlalchemy import create_engine
 
 class Sftp:
-    def __init__(self,record):
-        """Constructor Method"""
-        # Set connection object to None (initial value)
+    def __init__(self, record):
         self.connection = None
         self.record = record
 
-    def connect(self,hostname,username,password,port=22):
-        """Connects to the sftp server and returns the sftp connection object"""
+    def __enter__(self):
+        return self
 
+    def __exit__(self, exc_type, exc_value, traceback):
+        if self.connection:
+            self.connection.close()
+
+    def connect(self, hostname, username, password, port=22):
         try:
-            # Get the sftp connection object
             self.connection = pysftp.Connection(
                 host=hostname,
                 username=username,
@@ -28,156 +28,72 @@ class Sftp:
             )
         except Exception as err:
             raise Exception(err)
-        finally:
-            print(f"Connected to {hostname} as {username}.")
-
-    def disconnect(self, hostname):
-        """Closes the sftp connection"""
-        self.connection.close()
-        print(f"Disconnected from host {hostname}")
 
     def listdir(self, remote_path):
-        """lists all the files and directories in the specified path and returns them"""
-        for obj in self.connection.listdir(remote_path):
-            yield obj
+        return self.connection.listdir(remote_path)
 
     def listdir_attr(self, remote_path):
-        """lists all the files and directories (with their attributes) in the specified path and returns them"""
-        for attr in self.connection.listdir_attr(remote_path):
-            yield attr
+        return self.connection.listdir_attr(remote_path)
 
     def download(self, hostname, username, remote_path, target_local_path):
-        """
-        Downloads the file from remote sftp server to local.
-        Also, by default extracts the file to the specified target_local_path
-        """
-
         try:
-            print(
-                f"downloading from {hostname} as {username} [(remote path : {remote_path});(local path: {target_local_path})]"
-            )
-
-            # Create the target directory if it does not exist
             path, _ = os.path.split(target_local_path)
-            if not os.path.isdir(path):
-                try:
-                    os.makedirs(path)
-                except Exception as err:
-                    raise Exception(err)
-
-            # Download from remote sftp server to local
+            Path(path).mkdir(parents=True, exist_ok=True)
             self.connection.get(remote_path, target_local_path)
-            print("download completed")
+            print("Download completed")
 
         except Exception as err:
             raise Exception(err)
 
-    def upload(self, hostname,username,source_local_path, remote_path):
-        """
-        Uploads the source files from local to the sftp server.
-        """
-
+    def upload(self, hostname, username, source_local_path, remote_path):
         try:
-            print(
-                f"uploading to {hostname} as {username} [(remote path: {remote_path});(source local path: {source_local_path})]"
-            )
-
-            # Download file from SFTP
             self.connection.put(source_local_path, remote_path)
-            print("upload completed")
 
         except Exception as err:
             raise Exception(err)
-        
+
     def sftp_upload(self):
-
-
-        Previous_Date = datetime.datetime.today() - datetime.timedelta(days=1)
-        Previous_Date_Formatted = Previous_Date.strftime(
-            '%Y%m%d')  # format the date to ddmmyyyy
+        Current_Date = datetime.datetime.today()
+        Current_Date_Formatted = Current_Date.strftime("%Y/%m/%d, %H:%M:%S")
+        Previous_Date = Current_Date - datetime.timedelta(days=1)
+        Previous_Date_Formatted = Previous_Date.strftime('%Y%m%d')
 
         server_creds = self.record['ip_port'].split(',')
         database_creds = self.record['database_creds'].split(',')
-        report_name = self.record['report_name']+'_'+Previous_Date_Formatted+'.csv'
+        report_name = f"{self.record['report_name']}_{Previous_Date_Formatted}.csv"
         query = self.record['query']
-
 
         databaseType = self.record["database_type"].lower()
 
+        # Database connection
+        credentials = {
+            'postgresql': f"postgresql://{database_creds[0]}:{database_creds[1]}@{server_creds[0]}:{server_creds[1]}/{database_creds[2]}",
+            'mssql': f"mssql+pyodbc://{database_creds[0]}:{database_creds[1]}@{server_creds[0]}:{server_creds[1]}/{database_creds[2]}?driver=ODBC+Driver+17+for+SQL+Server",
+            'mysql': f"mysql+mysqlconnector://{database_creds[0]}:{database_creds[1]}@{server_creds[0]}:{server_creds[1]}/{database_creds[2]}",
+        }
 
-        match databaseType:
-            case "postgresql":
-                conn = psycopg2.connect(
-                    host=server_creds[0],
-                    database=database_creds[2],
-                    user=database_creds[0],
-                    password=database_creds[1],
-                    port=server_creds[1])
-            case "mssql":
-                conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};\
-                      SERVER='+server_creds[0]+';\
-                      DATABASE='+database_creds[2]+';\
-                      UID='+database_creds[0]+';\
-                      PWD='+ database_creds[1])
+        try:
+            db_uri = credentials.get(databaseType)
+            engine = create_engine(db_uri)
 
-                
-            case "mysql":
-                conn = mysql.connector.connect(host=server_creds[0],
-                                            database=database_creds[2],
-                                            user=database_creds[0],
-                                            password=database_creds[1],
-                                            port=server_creds[1])
+            with engine.connect() as conn:
+                df = pd.read_sql_query(query, conn)
 
+            file_path = Path('/home/zareef/projects/reportScheduler/reports') / report_name
+            df.to_csv(file_path, header=True, index=False, mode='w')
+            # print(f"{report_name} created")
 
+            sftp_creds = self.record['receiver_creds'].split(',')
+            hostname, username, password = sftp_creds[0], sftp_creds[1], sftp_creds[2]
 
-
-        # Open the file
-        file_path = '/home/zareef/projects/reportScheduler/reports/' + report_name
-
-        # Check if the file already exists and delete it
-        if os.path.exists(file_path):
-            print(report_name, " file found. Deleting...")
-            os.remove(file_path)
-        
-        # Execute the query and directly read the result into a DataFrame
-        df = pd.read_sql_query(query, conn)
-        # Save the DataFrame to a CSV file
-        df.to_csv(file_path, header=True, index=False, mode='w')
-
-        print(report_name, " created")
-
-        sftp_creds = self.record['receiver_creds'].split(',')
-
-        
-        hostname=sftp_creds[0]
-        username=sftp_creds[1]
-        password=sftp_creds[2]
-        
-        
-
-        # Connect to SFTP
-        self.connect(hostname,username,password)
-
-        # Lists files with attributes of SFTP
-        path = "/"
-        print(f"List of files with attributes at location {path}:")
-        for file in self.listdir_attr(path):
-            print(file.filename, file.st_mode, file.st_size, file.st_atime, file.st_mtime)
-
-        # Upload files to SFTP location from local
-        local_path = '/home/zareef/projects/reportScheduler/reports/' + report_name
-        remote_path = sftp_creds[3]+report_name
-        self.upload(hostname,username, local_path, remote_path)
-
-        # Lists files of SFTP location after upload
-        print(f"List of files at location {path}:")
-        print([f for f in self.listdir(path)])
-
-        # Download files from SFTP
-        # sftp.download(
-        #     remote_path, os.path.join(hostname,username,remote_path, local_path + '.backup')
-        # )
-
-        # Disconnect from SFTP
-        self.disconnect(hostname)
+            self.connect(hostname, username, password)
             
+            with self.connection:
+                local_path = Path('/home/zareef/projects/reportScheduler/reports') / report_name
+                remote_path = sftp_creds[3] + report_name
+                self.upload(hostname, username, local_path, remote_path)
+
+            print(f"\n{Current_Date_Formatted} {report_name} REPORT UPLOADED SUCCESSFULLY")
+
+        except Exception as e:
+            logging.error(f"Error: {e}")
