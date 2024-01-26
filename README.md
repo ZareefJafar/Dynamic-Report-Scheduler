@@ -16,20 +16,17 @@ Scheduling report generation and automatic delivery.
 [DVD rental database](https://www.postgresqltutorial.com/postgresql-getting-started/postgresql-sample-database/)
 
 
-### Libraries:
-[APScheduler](https://github.com/agronholm/apscheduler) 3.11.5\
-[pycrypto](https://anaconda.org/anaconda/pycrypto) : For AES-256 Encryption and Decryption.
+### Setting up the Conda Environment
 
+To recreate the Conda environment, follow these steps:
 
+```bash
+conda env create --name sched --file requirements.yml
 ```
-conda create --name sched python=3.11.5
-```
-```
+```bash
 conda activate sched
 ```
-```
-conda install -c conda-forge apscheduler pyodbc psycopg2 mysql-connector-python pandas pysftp
-```
+
 Features:
 * Extracts unique specifications for report generation tasks from a centralized SQLite3 table.
 * Dynamically creates and schedules jobs based on extracted specifications.
@@ -44,8 +41,9 @@ Upcoming features:
 
 
 
+### Reports table
 
-creating ```reports``` table of ```creads.db``` SQLite database:
+Creating ```reports``` table of ```creads.db``` SQLite database:
 
 ```
 CREATE TABLE "reports" (
@@ -70,7 +68,8 @@ CREATE TABLE "reports" (
 ```
 
 
-### Reports table attributes
+Reports table description
+
 ```
 id -             {id of report}
 report_name -    {genrated report file name}

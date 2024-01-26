@@ -1,0 +1,13 @@
+channels:
+  - conda-forge
+  - defaults
+
+dependencies:
+  - python=3.11.5
+  - apscheduler=3.10.4
+  - pyodbc=5.0.1
+  - psycopg2=2.9.9
+  - mysql-connector-python=8.0.33
+  - pandas=2.2.0
+  - pysftp=0.2.9
+  - sqlalchemy=2.0.25
