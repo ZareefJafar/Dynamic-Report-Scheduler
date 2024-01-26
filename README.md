@@ -20,6 +20,16 @@ Scheduling report generation and automatic delivery.
 [APScheduler](https://github.com/agronholm/apscheduler) 3.11.5\
 [pycrypto](https://anaconda.org/anaconda/pycrypto) : For AES-256 Encryption and Decryption.
 
+
+```
+conda create --name shed python=3.11.5
+```
+```
+conda activate shed
+```
+```
+conda install -c conda-forge apscheduler pyodbc psycopg2 mysql-connector-python pandas pysftp
+```
 Features:
 * Extracts unique specifications for report generation tasks from a centralized SQLite3 table.
 * Dynamically creates and schedules jobs based on extracted specifications.
