@@ -32,7 +32,6 @@ Features:
 * Dynamically creates and schedules jobs based on extracted specifications.
 * Generate reports and send them via email.
 * Uploloading reports to SFTP servers.
-* Optional AES-256 based encrypt and decrypt for some sensitive credentials.
 * Can pool data from an unlimited number of database servers.
 
 
