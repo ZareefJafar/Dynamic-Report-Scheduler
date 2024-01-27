@@ -5,6 +5,7 @@ import logging
 import pysftp
 import pandas as pd
 from sqlalchemy import create_engine
+from urllib.parse import quote_plus
 
 class Sftp:
     def __init__(self, record):
@@ -45,7 +46,7 @@ class Sftp:
         except Exception as err:
             raise Exception(err)
 
-    def upload(self, source_local_path, remote_path):
+    def upload(self, hostname, username, source_local_path, remote_path):
         try:
             self.connection.put(source_local_path, remote_path)
 
@@ -76,27 +77,37 @@ class Sftp:
                 db_uri = (
                     f"postgresql://{database_creds[0]}:{database_creds[1]}@"
                     f"{server_creds[0]}:{server_creds[1]}/{database_creds[2]}"
-            )
-            elif databaseType == "mssql":
-                db_uri = (
-                    f"mssql+pyodbc://{database_creds[0]}:{database_creds[1]}@"
-                    f"{server_creds[0]}:{server_creds[1]}/{database_creds[2]}?"
-                    "driver=ODBC+Driver+18+for+SQL+Server;"
-                    "Encrypt=yes;TrustServerCertificate=yes;Connection Timeout=30;"
                 )
+                engine = create_engine(db_uri)
+
+            elif databaseType == "mssql":
+                params = quote_plus(
+                    f"DRIVER={{ODBC Driver 18 for SQL Server}};"
+                    f"SERVER={server_creds[0]},{server_creds[1]};"
+                    f"DATABASE={database_creds[2]};"
+                    f"UID={database_creds[0]};"
+                    f"PWD={database_creds[1]};"
+                    "Encrypt=yes;"
+                    "TrustServerCertificate=yes;"  # Disable SSL certificate check
+                    "Connection Timeout=30;"
+                )
+                engine = create_engine(f"mssql+pyodbc:///?odbc_connect={params}")
+
             elif databaseType == "mysql":
                 db_uri = (
                     f"mysql+mysqlconnector://{database_creds[0]}:{database_creds[1]}@"
                     f"{server_creds[0]}:{server_creds[1]}/{database_creds[2]}"
                 )
+                engine = create_engine(db_uri)
 
-            engine = create_engine(db_uri)
+
+        
             conn = engine.connect()
 
 
             df = pd.read_sql_query(query, conn)
 
-            file_path = Path('/home/zareef/projects/reportScheduler/reports') / report_name
+            file_path = Path('/home/zareef/projects/reportScheduler/reports/') / report_name
             df.to_csv(file_path, header=True, index=False, mode='w')
             # print(f"{report_name} created")
 
@@ -106,7 +117,7 @@ class Sftp:
             self.connect(hostname, username, password)
             
             with self.connection:
-                local_path = Path('/home/zareef/projects/reportScheduler/reports') / report_name
+                local_path = Path('/home/zareef/projects/reportScheduler/reports/') / report_name
                 remote_path = sftp_creds[3] + report_name
                 self.upload(hostname, username, local_path, remote_path)
 
