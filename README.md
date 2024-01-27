@@ -12,6 +12,8 @@ Scheduling report generation and automatic delivery.
                      Need a GUI tool like [DB Browser](https://sqlitebrowser.org/) for editing SQLite.\
 **PostgreSQL, MySQL, Microsoft SQL Server**:      For report data
 
+**Microsoft ODBC 18** : [Install the Microsoft ODBC driver for SQL Server (Linux)](https://learn.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server?view=sql-server-ver16&tabs=ubuntu18-install%2Calpine17-install%2Cdebian8-install%2Credhat7-13-install%2Crhel7-offline#18)
+
 ### Sample Report database:
 [DVD rental database](https://www.postgresqltutorial.com/postgresql-getting-started/postgresql-sample-database/)
 
