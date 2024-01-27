@@ -42,11 +42,22 @@ class Mail:
 
         try:
             if databaseType == "postgresql":
-                db_uri = f"postgresql://{database_creds[0]}:{database_creds[1]}@{server_creds[0]}:{server_creds[1]}/{database_creds[2]}"
+                db_uri = (
+                    f"postgresql://{database_creds[0]}:{database_creds[1]}@"
+                    f"{server_creds[0]}:{server_creds[1]}/{database_creds[2]}"
+            )
             elif databaseType == "mssql":
-                db_uri = f"mssql+pyodbc://{database_creds[0]}:{database_creds[1]}@{server_creds[0]}:{server_creds[1]}/{database_creds[2]}?driver=ODBC+Driver+17+for+SQL+Server"
+                db_uri = (
+                    f"mssql+pyodbc://{database_creds[0]}:{database_creds[1]}@"
+                    f"{server_creds[0]}:{server_creds[1]}/{database_creds[2]}?"
+                    "driver=ODBC+Driver+18+for+SQL+Server;"
+                    "Encrypt=yes;TrustServerCertificate=yes;Connection Timeout=30;"
+                )
             elif databaseType == "mysql":
-                db_uri = f"mysql+mysqlconnector://{database_creds[0]}:{database_creds[1]}@{server_creds[0]}:{server_creds[1]}/{database_creds[2]}"
+                db_uri = (
+                    f"mysql+mysqlconnector://{database_creds[0]}:{database_creds[1]}@"
+                    f"{server_creds[0]}:{server_creds[1]}/{database_creds[2]}"
+                )
 
             engine = create_engine(db_uri)
             conn = engine.connect()

@@ -45,7 +45,7 @@ class Sftp:
         except Exception as err:
             raise Exception(err)
 
-    def upload(self, hostname, username, source_local_path, remote_path):
+    def upload(self, source_local_path, remote_path):
         try:
             self.connection.put(source_local_path, remote_path)
 
@@ -66,18 +66,35 @@ class Sftp:
         databaseType = self.record["database_type"].lower()
 
         # Database connection
-        credentials = {
-            'postgresql': f"postgresql://{database_creds[0]}:{database_creds[1]}@{server_creds[0]}:{server_creds[1]}/{database_creds[2]}",
-            'mssql': f"mssql+pyodbc://{database_creds[0]}:{database_creds[1]}@{server_creds[0]}:{server_creds[1]}/{database_creds[2]}?driver=ODBC+Driver+17+for+SQL+Server",
-            'mysql': f"mysql+mysqlconnector://{database_creds[0]}:{database_creds[1]}@{server_creds[0]}:{server_creds[1]}/{database_creds[2]}",
-        }
+        db_uri = None
+        engine = None
+        conn = None
+
 
         try:
-            db_uri = credentials.get(databaseType)
-            engine = create_engine(db_uri)
+            if databaseType == "postgresql":
+                db_uri = (
+                    f"postgresql://{database_creds[0]}:{database_creds[1]}@"
+                    f"{server_creds[0]}:{server_creds[1]}/{database_creds[2]}"
+            )
+            elif databaseType == "mssql":
+                db_uri = (
+                    f"mssql+pyodbc://{database_creds[0]}:{database_creds[1]}@"
+                    f"{server_creds[0]}:{server_creds[1]}/{database_creds[2]}?"
+                    "driver=ODBC+Driver+18+for+SQL+Server;"
+                    "Encrypt=yes;TrustServerCertificate=yes;Connection Timeout=30;"
+                )
+            elif databaseType == "mysql":
+                db_uri = (
+                    f"mysql+mysqlconnector://{database_creds[0]}:{database_creds[1]}@"
+                    f"{server_creds[0]}:{server_creds[1]}/{database_creds[2]}"
+                )
 
-            with engine.connect() as conn:
-                df = pd.read_sql_query(query, conn)
+            engine = create_engine(db_uri)
+            conn = engine.connect()
+
+
+            df = pd.read_sql_query(query, conn)
 
             file_path = Path('/home/zareef/projects/reportScheduler/reports') / report_name
             df.to_csv(file_path, header=True, index=False, mode='w')
