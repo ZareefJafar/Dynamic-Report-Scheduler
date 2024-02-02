@@ -6,11 +6,13 @@ import pysftp
 import pandas as pd
 from sqlalchemy import create_engine
 from urllib.parse import quote_plus
+from pathlib import Path
 
 class Sftp:
-    def __init__(self, record):
+    def __init__(self, record,created_folder_path):
         self.connection = None
         self.record = record
+        self.created_folder_path = created_folder_path
 
     def __enter__(self):
         return self
@@ -19,13 +21,17 @@ class Sftp:
         if self.connection:
             self.connection.close()
 
-    def connect(self, hostname, username, password, port=22):
+    def connect(self, hostname, username, password, port):
         try:
+            cnopts = pysftp.CnOpts()
+            cnopts.hostkeys = None 
+
             self.connection = pysftp.Connection(
                 host=hostname,
                 username=username,
                 password=password,
-                port=port,
+                port=int(port),
+                cnopts=cnopts
             )
         except Exception as err:
             raise Exception(err)
@@ -52,10 +58,18 @@ class Sftp:
 
         except Exception as err:
             raise Exception(err)
+        
+    def append_or_create_file(self, file_path, line):
+        file_path = Path(file_path)
+
+        # Use 'x' flag to open the file for exclusive creation
+        with file_path.open(mode='a' if file_path.exists() else 'x') as file:
+            file.write(line + '\n')
 
     def sftp_upload(self):
         Current_Date = datetime.datetime.today()
         Current_Date_Formatted = Current_Date.strftime("%Y/%m/%d, %H:%M:%S")
+        Current_Date_Formatted_for_list_file = Current_Date.strftime('%Y%m%d')
         Previous_Date = Current_Date - datetime.timedelta(days=1)
         Previous_Date_Formatted = Previous_Date.strftime('%Y%m%d')
 
@@ -107,21 +121,25 @@ class Sftp:
 
             df = pd.read_sql_query(query, conn)
 
-            file_path = Path('/home/zareef/projects/reportScheduler/reports/') / report_name
+            file_path = Path(self.created_folder_path) / report_name
             df.to_csv(file_path, header=True, index=False, mode='w')
             # print(f"{report_name} created")
 
             sftp_creds = self.record['receiver_creds'].split(',')
-            hostname, username, password = sftp_creds[0], sftp_creds[1], sftp_creds[2]
+            hostname, port, username, password = sftp_creds[0], sftp_creds[1], sftp_creds[2],sftp_creds[3]
 
-            self.connect(hostname, username, password)
+            self.connect(hostname, username, password, port)
             
             with self.connection:
-                local_path = Path('/home/zareef/projects/reportScheduler/reports/') / report_name
-                remote_path = sftp_creds[3] + report_name
+                local_path = Path(self.created_folder_path) / report_name
+                remote_path = sftp_creds[4] + report_name
                 self.upload(hostname, username, local_path, remote_path)
 
-            print(f"\n{Current_Date_Formatted} {report_name} REPORT UPLOADED SUCCESSFULLY")
+            report_list_name = f"A_reportList_{Current_Date_Formatted_for_list_file}.txt"
+            report_list_file_path = os.path.join(self.created_folder_path, report_list_name)
+            message = f"{Current_Date_Formatted} {report_name} REPORT Uploaded SUCCESSFULLY"
+            self.append_or_create_file(report_list_file_path,message)
+            print(message)
 
         except Exception as e:
             logging.error(f"Error: {e}")
