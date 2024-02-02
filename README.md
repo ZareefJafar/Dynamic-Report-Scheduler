@@ -34,12 +34,13 @@ Features:
 * Dynamically creates and schedules jobs based on extracted specifications.
 * Generate reports and send them via email.
 * Uploloading reports to SFTP servers.
+* Automate daily MySQL database backups from one server to another
 * Can pool data from an unlimited number of database servers.
 
 
 Upcoming features:
 * Instructions for monthly, yearly, weekly, and more custom intervals.
-
+* Automate daily PostgreSQL and Microsoft SQL Server database backups from one server to another
 
 
 ### Reports table
