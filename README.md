@@ -62,6 +62,7 @@ CREATE TABLE "reports" (
 	"bcc"	TEXT,
 	"subject"	text,
 	"body"	text,
+	"frequency"	TEXT,
 	"date_time"	text,
 	"query"	text,
 	"active"	TEXT
@@ -85,6 +86,7 @@ cc -             {mail_id1,mail_id2,mail_id3.....}
 bcc -            {mail_id1,mail_id2,mail_id3.....}
 subject -        {subject text}
 body -           {body in html}
+frequency -      {daily/weekly/monthly/yearly ......}
 date_time -      {trigger date time}
 query -          {sql query for report/Stored Procedures}
 active -         {0 for inactive and 1 for active}
