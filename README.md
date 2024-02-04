@@ -32,7 +32,7 @@ conda activate sched
 Features:
 
 * Extracts unique specifications for report generation tasks from a centralized SQLite3 table.
-* Dynamically creates and schedules jobs based on extracted specifications.
+* Dynamically creates and schedules jobs based on extracted specifications (daily and monthly frequency)
 * Generates and dispatches reports via email.
 * Uploads reports to SFTP servers.
 * Automates daily MySQL database backups from one server to another.
@@ -40,7 +40,7 @@ Features:
 
 
 Upcoming features:
-* Additional scheduling options for monthly, yearly, weekly, and custom intervals.
+* Additional scheduling options for yearly, weekly, and custom intervals.
 * Automation of daily backups for PostgreSQL and Microsoft SQL Server databases from one server to another.
 
 
