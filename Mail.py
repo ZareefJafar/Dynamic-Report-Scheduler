@@ -39,7 +39,12 @@ class Mail:
         to = self.record['to_mail']
         cc = self.record['cc']
         bcc = self.record['bcc']
-        report_name = f"{self.record['report_name']}_{Previous_Date_Formatted}.csv"
+
+        if self.record['frequency'] == 'monthly':
+            report_name = f"{self.record['report_name']}.csv"
+        else:
+            report_name = f"{self.record['report_name']}_{Previous_Date_Formatted}.csv"
+            
         print(f"Starting {report_name} process..")
         query = self.record['query']
 
