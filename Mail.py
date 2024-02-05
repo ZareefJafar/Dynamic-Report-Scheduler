@@ -93,15 +93,21 @@ class Mail:
         
             conn = engine.connect()
         
-
+            if self.record['body'] == 'by_sql':
+                result = conn.execute(query)
+                html = result.scalar()
+            else:
             # Execute the query and directly read the result into a DataFrame
-            df = pd.read_sql_query(query, conn)
+                df = pd.read_sql_query(query, conn)
 
-            # Open the file
-            file_path = os.path.join(self.created_folder_path,  str(report_name))
+                # Open the file
+                file_path = os.path.join(self.created_folder_path,  str(report_name))
 
-            # Save the DataFrame to a CSV file
-            df.to_csv(file_path, header=True, index=False, mode='w')
+                # Save the DataFrame to a CSV file
+                df.to_csv(file_path, header=True, index=False, mode='w')
+
+                # Create the HTML version of your message
+                html = self.record['body']
 
             # print(report_name, " CREATED")
 
@@ -115,7 +121,7 @@ class Mail:
             message['Bcc'] = bcc
 
             # Create the HTML version of your message
-            html = self.record['body']
+            # html = self.record['body']
 
             # Create both plain and HTML text objects
             body = MIMEText(html, "html")
