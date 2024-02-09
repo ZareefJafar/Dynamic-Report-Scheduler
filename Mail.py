@@ -12,6 +12,7 @@ import pandas as pd
 import datetime
 from urllib.parse import quote_plus
 from pathlib import Path
+from sqlalchemy.sql import text
 
 class Mail:
     def __init__(self, record,created_folder_path):
@@ -94,7 +95,10 @@ class Mail:
             conn = engine.connect()
         
             if self.record['body'] == 'by_sql':
+                query = text(query)
+                
                 result = conn.execute(query)
+    
                 html = result.scalar()
             else:
             # Execute the query and directly read the result into a DataFrame
@@ -126,17 +130,18 @@ class Mail:
             # Create both plain and HTML text objects
             body = MIMEText(html, "html")
 
-            attachment = open(os.path.join(str(self.created_folder_path), report_name), "rb")
+            if self.record['body'] != 'by_sql':
+                attachment = open(os.path.join(str(self.created_folder_path), report_name), "rb")
 
-            obj = MIMEBase('application', 'octet-stream')
-            name = report_name
-            obj.set_payload((attachment).read())
-            encoders.encode_base64(obj)
-            obj.add_header('Content-Disposition', "attachment", filename=name)
+                obj = MIMEBase('application', 'octet-stream')
+                name = report_name
+                obj.set_payload((attachment).read())
+                encoders.encode_base64(obj)
+                obj.add_header('Content-Disposition', "attachment", filename=name)
 
-            message.attach(obj)
+                message.attach(obj)
 
-            # Attach both versions to the outgoing message
+                # Attach both versions to the outgoing message
             message.attach(body)
 
             to_list = []
