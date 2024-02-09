@@ -92,6 +92,7 @@ class Mail:
 
 
         
+        
             conn = engine.connect()
         
             if self.record['body'] == 'by_sql':
