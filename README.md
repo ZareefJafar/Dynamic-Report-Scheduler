@@ -10,33 +10,47 @@ Scheduling report generation and automatic delivery.
 **SQLite3**:         For credentials and queries. No need for a separate setup. 
                      Comes with python by default.  
                      Need a GUI tool like [DB Browser](https://sqlitebrowser.org/) for editing SQLite.\
-**PostgreSQL, MySQL**:      For report data
+**PostgreSQL, MySQL, Microsoft SQL Server**:      For report data
+
+**Microsoft ODBC 18** : [Install the Microsoft ODBC driver for SQL Server (Linux)](https://learn.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server?view=sql-server-ver16&tabs=ubuntu18-install%2Calpine17-install%2Cdebian8-install%2Credhat7-13-install%2Crhel7-offline#18)
 
 ### Sample Report database:
 [DVD rental database](https://www.postgresqltutorial.com/postgresql-getting-started/postgresql-sample-database/)
 
 
-### Libraries:
-[APScheduler](https://github.com/agronholm/apscheduler) 3.11.5\
-[pycrypto](https://anaconda.org/anaconda/pycrypto) : For AES-256 Encryption and Decryption.
+### Setting up the Conda Environment
+
+To recreate the Conda environment, follow these steps:
+
+```bash
+conda env create --name sched --file requirements.yml
+```
+```bash
+conda activate sched
+```
 
 Features:
+
 * Extracts unique specifications for report generation tasks from a centralized SQLite3 table.
-* Dynamically creates and schedules jobs based on extracted specifications.
-* Generate reports and send them via email.
-* Uploloading reports to SFTP servers.
-* Optional AES-256 based encrypt and decrypt for some sensitive credentials.
+* Dynamically creates and schedules jobs based on extracted specifications (daily and monthly frequency)
+* Generates and dispatches reports via email.
+* Uploads reports to SFTP servers.
+* Automates daily MySQL database backups from one server to another.
 * Can pool data from an unlimited number of database servers.
 
 
 Upcoming features:
-* Add options for Microsoft SQL Server for report data storage (PostgreSQL and MySQL are currently implemented and tested).
-* Instructions for monthly, yearly, weekly, and more custom intervals.
+* Additional scheduling options for yearly, weekly, and custom intervals.
+* Automation of daily backups for PostgreSQL and Microsoft SQL Server databases from one server to another.
 
 
 
 
-creating ```reports``` table of ```creads.db``` SQLite database:
+
+
+### Reports table
+
+Creating ```reports``` table of ```creads.db``` SQLite database:
 
 ```
 CREATE TABLE "reports" (
@@ -46,6 +60,7 @@ CREATE TABLE "reports" (
 	"ip_port"	text,
 	"database_creds"	text,
 	"sender_creds"	text,
+	"sender_type"	TEXT,
 	"receiver_creds"	TEXT,
 	"receiver_type"	TEXT,
 	"to_mail"	text,
@@ -53,13 +68,16 @@ CREATE TABLE "reports" (
 	"bcc"	TEXT,
 	"subject"	text,
 	"body"	text,
+	"frequency"	TEXT,
 	"date_time"	text,
-	"query"	text
+	"query"	text,
+	"active"	TEXT
 )
 ```
 
 
-### Reports table attributes
+Reports table description
+
 ```
 id -             {id of report}
 report_name -    {genrated report file name}
@@ -74,9 +92,10 @@ cc -             {mail_id1,mail_id2,mail_id3.....}
 bcc -            {mail_id1,mail_id2,mail_id3.....}
 subject -        {subject text}
 body -           {body in html}
+frequency -      {daily/weekly/monthly/yearly ......}
 date_time -      {trigger date time}
 query -          {sql query for report/Stored Procedures}
-
+active -         {0 for inactive and 1 for active}
 ```
 
 If you want to contribute please read the CONTRIBUTING.md
