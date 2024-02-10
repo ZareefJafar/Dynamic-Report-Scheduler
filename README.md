@@ -2,6 +2,33 @@
 
 Scheduling report generation and automatic delivery.
 
+### Features:
+
+Data Source Management:
+
+- Centralized SQLite3 table to store unique report generation specifications.
+- Ability to pool data from multiple database servers seamlessly.
+
+Dynamic Job Creation and Scheduling:
+
+- Generates and schedules jobs based on extracted specifications.
+- Supports both daily and monthly frequency for job execution.
+
+Report Delivery Options:
+
+- Dispatches reports as attachments via email.
+- Offers the option to dispatch reports in the body of the email text.
+- Facilitates uploading reports to SFTP servers.
+
+Automated Database Backup:
+
+- Performs daily MySQL database backups from one server to another.
+
+
+### Upcoming features:
+- Additional scheduling options for yearly, weekly, and custom intervals.
+- Automation of daily backups for PostgreSQL and Microsoft SQL Server databases from one server to another.
+
 
 ### Test environment:
 
@@ -28,36 +55,6 @@ conda env create --name sched --file requirements.yml
 ```bash
 conda activate sched
 ```
-
-Features:
-
-Data Source Management:
-
-- Centralized SQLite3 table to store unique report generation specifications.
-- Ability to pool data from multiple database servers seamlessly.
-
-Dynamic Job Creation and Scheduling:
-
-- Generates and schedules jobs based on extracted specifications.
-- Supports both daily and monthly frequency for job execution.
-- Report Delivery Options:
-
-Dispatches reports as attachments via email.
-- Offers the option to dispatch reports in the body of the email text.
-- Facilitates uploading reports to SFTP servers.
-
-Automated Database Backup:
-
-- Performs daily MySQL database backups from one server to another.
-
-
-Upcoming features:
-- Additional scheduling options for yearly, weekly, and custom intervals.
-- Automation of daily backups for PostgreSQL and Microsoft SQL Server databases from one server to another.
-
-
-
-
 
 
 ### Reports table
