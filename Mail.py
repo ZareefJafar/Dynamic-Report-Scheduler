@@ -9,10 +9,11 @@ from email import encoders
 import os
 from sqlalchemy import create_engine
 import pandas as pd
-import datetime
+from datetime import datetime, timedelta
 from urllib.parse import quote_plus
 from pathlib import Path
 from sqlalchemy.sql import text
+import calendar
 
 class Mail:
     def __init__(self, record,created_folder_path):
@@ -28,11 +29,12 @@ class Mail:
 
 
     def email_dispatch(self):
-        Current_Date = datetime.datetime.today()
+        Current_Date = datetime.today()
         Current_Date_Formatted = Current_Date.strftime("%Y/%m/%d, %H:%M:%S")
         Current_Date_Formatted_for_list_file = Current_Date.strftime('%Y%m%d')
-        Previous_Date = Current_Date - datetime.timedelta(days=1)
+        Previous_Date = Current_Date - timedelta(days=1)
         Previous_Date_Formatted = Previous_Date.strftime('%Y%m%d')
+        Previous_Date_Formatted_subject = Previous_Date.strftime("%d %B %Y")
 
         server_creds = self.record['ip_port'].split(',')
         database_creds = self.record['database_creds'].split(',')
@@ -40,12 +42,28 @@ class Mail:
         to = self.record['to_mail']
         cc = self.record['cc']
         bcc = self.record['bcc']
+        message = MIMEMultipart("")
 
         if self.record['frequency'] == 'monthly':
-            report_name = f"{self.record['report_name']}.csv"
+    
+            # Get the current date
+            current_date = datetime.now()
+
+            # Calculate the first day of the current month
+            first_day_of_current_month = current_date.replace(day=1)
+
+            # Calculate the last day of the previous month
+            last_day_of_previous_month = first_day_of_current_month - timedelta(days=1)
+
+            # Get the name and year of the previous month
+            previous_month_name = calendar.month_name[last_day_of_previous_month.month]
+            previous_month_year = last_day_of_previous_month.year
+            report_name = f"{self.record['report_name']}_{previous_month_name}{previous_month_year}.csv"
+            message["Subject"] = f"{self.record['subject']} of {previous_month_name} {previous_month_year}"
         else:
             report_name = f"{self.record['report_name']}_{Previous_Date_Formatted}.csv"
-            
+            message["Subject"] = f"{self.record['subject']} of {Previous_Date_Formatted_subject}"
+
         print(f"Starting {report_name} process..")
         query = self.record['query']
 
@@ -92,7 +110,6 @@ class Mail:
 
 
         
-        
             conn = engine.connect()
         
             if self.record['body'] == 'by_sql':
@@ -118,8 +135,7 @@ class Mail:
 
             # Sending email code...
             
-            message = MIMEMultipart("")
-            message["Subject"] = self.record['subject']
+            
             message["From"] = sender_address
             message["To"] = to
             message['Cc'] = cc
