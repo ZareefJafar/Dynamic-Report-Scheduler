@@ -33,6 +33,7 @@ class Sftp:
                 port=int(port),
                 cnopts=cnopts
             )
+            print(self.connection)
         except Exception as err:
             raise Exception(err)
 
@@ -123,7 +124,7 @@ class Sftp:
 
             file_path = Path(self.created_folder_path) / report_name
             df.to_csv(file_path, header=True, index=False, mode='w')
-            # print(f"{report_name} created")
+            print(f"{report_name} created")
 
             sftp_creds = self.record['receiver_creds'].split(',')
             hostname, port, username, password = sftp_creds[0], sftp_creds[1], sftp_creds[2],sftp_creds[3]
