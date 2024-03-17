@@ -92,10 +92,11 @@ body -           {body in html}
 frequency -      {daily/weekly/monthly/yearly ......}
 date_time -      {trigger date time}
 
+```
 
 ### Installation
 
-See INSTALL.md.
+See **INSTALL.md**
 
 
 If you want to contribute please read the CONTRIBUTING.md
