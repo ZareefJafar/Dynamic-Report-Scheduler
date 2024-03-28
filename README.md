@@ -45,18 +45,6 @@ Automated Database Backup:
 [DVD rental database](https://www.postgresqltutorial.com/postgresql-getting-started/postgresql-sample-database/)
 
 
-### Setting up the Conda Environment
-
-To recreate the Conda environment, follow these steps:
-
-```bash
-conda env create --name sched --file requirements.yml
-```
-```bash
-conda activate sched
-```
-
-
 ### Reports table
 
 Creating ```reports``` table of ```creads.db``` SQLite database:
@@ -103,8 +91,12 @@ subject -        {subject text}
 body -           {body in html}
 frequency -      {daily/weekly/monthly/yearly ......}
 date_time -      {trigger date time}
-query -          {sql query for report/Stored Procedures}
-active -         {0 for inactive and 1 for active}
+
 ```
+
+### Installation
+
+See **INSTALL.md**
+
 
 If you want to contribute please read the CONTRIBUTING.md
