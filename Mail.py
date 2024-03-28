@@ -14,11 +14,17 @@ from urllib.parse import quote_plus
 from pathlib import Path
 from sqlalchemy.sql import text
 import calendar
+from datetime import datetime, timedelta
+from logger_config import setup_logger
+
+
+
 
 class Mail:
     def __init__(self, record,created_folder_path):
         self.record = record
         self.created_folder_path = created_folder_path
+        self.logger = setup_logger()
 
     def append_or_create_file(self, file_path, line):
         file_path = Path(file_path)
@@ -64,7 +70,7 @@ class Mail:
             report_name = f"{self.record['report_name']}_{Previous_Date_Formatted}.csv"
             message["Subject"] = f"{self.record['subject']} of {Previous_Date_Formatted_subject}"
 
-        print(f"Starting {report_name} process..")
+        self.logger.info(f"Starting {report_name} process..")
         query = self.record['query']
 
         sender_address = sender_creds[0]
@@ -131,7 +137,7 @@ class Mail:
                 # Create the HTML version of your message
                 html = self.record['body']
 
-            # print(report_name, " CREATED")
+            self.logger.info(f"{report_name} created")
 
             # Sending email code...
             
@@ -204,25 +210,26 @@ class Mail:
                     report_list_name = f"A_reportList_{Current_Date_Formatted_for_list_file}.txt"
                     report_list_file_path = os.path.join(self.created_folder_path, report_list_name)
                     success_message  = f"{Current_Date_Formatted} {report_name} REPORT MAILED SUCCESSFULLY"
-                    self.append_or_create_file(report_list_file_path,success_message )
+                    log_message  = f"{report_name} REPORT MAILED SUCCESSFULLY"
+                    # self.append_or_create_file(report_list_file_path,success_message)
                     sent_successfully = True
-                    print(success_message )
+                    self.logger.info(log_message)
 
                 except smtplib.SMTPException as smtp_exception:
-                    print(f"SMTP Exception: {smtp_exception}")
+                    self.logger.info(f"SMTP Exception: {smtp_exception}")
                     retry_count += 1
-                    print(f"{report_name} mail sending failed. Retrying ({retry_count}/{max_retries}) after 2 seconds...")
+                    self.logger.info(f"{report_name} mail sending failed. Retrying ({retry_count}/{max_retries}) after 2 seconds...")
                     sleep(2)
 
                 except Exception as e:
-                    print(f"Mail Error: {e}")
+                    self.logger.info(f"Mail Error: {e}")
                     retry_count += 1
-                    print(f"{report_name} mail sending failed. Retrying ({retry_count}/{max_retries}) after 2 seconds...")
+                    self.logger.info(f"{report_name} mail sending failed. Retrying ({retry_count}/{max_retries}) after 2 seconds...")
                     sleep(2)
 
 
         except Exception as e:
-            print(f"Error: {e}")
+            self.logger.error(f"Error: {e}")
         finally:
             # Close the database connection
             if conn:
