@@ -99,4 +99,4 @@ date_time -      {trigger date time}
 See **INSTALL.md**
 
 
-If you want to contribute please read the CONTRIBUTING.md
+If you want to contribute please read the **CONTRIBUTING.md**
