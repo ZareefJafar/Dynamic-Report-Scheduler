@@ -8,13 +8,18 @@ from pathlib import Path
 from DatabaseDump import DatabaseDump
 import calendar
 from datetime import datetime, timedelta
+from logger_config import setup_logger
 
 
 
 if __name__ == '__main__':
-    key = input(
-        "Enter password if credentials are encrypted (press ENTER otherwise): ")
-    print("Dynamic-Report-Scheduler running..........\n")
+
+    logger = setup_logger()
+
+    # Log an info message
+    logger.info("Dynamic-Report-Scheduler running..........\n")
+    # print("Dynamic-Report-Scheduler running..........\n")
+
     sched = BlockingScheduler()
 
     def create_folder(folder_name):
@@ -27,9 +32,15 @@ if __name__ == '__main__':
         # Create the folder if it doesn't exist
         folder_path.mkdir(parents=True, exist_ok=True)
         
-        # Display a message based on whether the folder was created or already exists
-        status = "created" if folder_path.is_dir() else "already exists"
-        print(f"Folder '{folder_name}' {status} at: {folder_path}")
+        # Check if the folder already exists
+        if folder_path.is_dir():
+            status = "already exists"
+        else:
+            # Create the folder if it doesn't exist
+            folder_path.mkdir(parents=True, exist_ok=True)
+            status = "created"
+
+        logger.info(f"Folder '{folder_name}' {status} at: {folder_path}")
         
         # Return the folder path
         return folder_path
@@ -43,17 +54,17 @@ if __name__ == '__main__':
         column_names = [description[0] for description in curCreds.description]
 
     except (Exception, sqlite3.Error) as error:
-        print("Error while fetching data from Database", error)
+        logger.info("Error while fetching data from Database", error)
         res = []  # Set res to an empty list in case of an error
         column_names = []  # Set column_names to an empty list
 
-    folder_name = "reports_repository"
+    folder_name = "report_repository"
     created_folder_path = create_folder(folder_name)
 
     for i in range(len(res)):
         job_args = dict(zip(column_names, res[i]))
         if job_args['active'] == '1':
-            print("Active report id: "+job_args['id'])
+            logger.info("Active report id: %s", job_args['id'])
             if job_args['receiver_type'] == 'email' and job_args['frequency'] == 'daily':
                 mail_instance = Mail(job_args,created_folder_path)
                 sched.add_job(mail_instance.email_dispatch, 'cron',

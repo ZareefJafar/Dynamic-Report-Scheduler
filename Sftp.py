@@ -7,12 +7,16 @@ import pandas as pd
 from sqlalchemy import create_engine
 from urllib.parse import quote_plus
 from pathlib import Path
+from logger_config import setup_logger
+
 
 class Sftp:
     def __init__(self, record,created_folder_path):
         self.connection = None
         self.record = record
         self.created_folder_path = created_folder_path
+        self.logger = setup_logger()
+
 
     def __enter__(self):
         return self
@@ -48,7 +52,7 @@ class Sftp:
             path, _ = os.path.split(target_local_path)
             Path(path).mkdir(parents=True, exist_ok=True)
             self.connection.get(remote_path, target_local_path)
-            print("Download completed")
+            self.logger.info("Download completed")
 
         except Exception as err:
             raise Exception(err)
@@ -124,7 +128,7 @@ class Sftp:
 
             file_path = Path(self.created_folder_path) / report_name
             df.to_csv(file_path, header=True, index=False, mode='w')
-            print(f"{report_name} created")
+            self.logger.info(f"{report_name} created")
 
             sftp_creds = self.record['receiver_creds'].split(',')
             hostname, port, username, password = sftp_creds[0], sftp_creds[1], sftp_creds[2],sftp_creds[3]
@@ -139,8 +143,9 @@ class Sftp:
             report_list_name = f"A_reportList_{Current_Date_Formatted_for_list_file}.txt"
             report_list_file_path = os.path.join(self.created_folder_path, report_list_name)
             message = f"{Current_Date_Formatted} {report_name} REPORT Uploaded SUCCESSFULLY"
-            self.append_or_create_file(report_list_file_path,message)
-            print(message)
+            log_message = f"{report_name} REPORT Uploaded SUCCESSFULLY"
+            # self.append_or_create_file(report_list_file_path,message)
+            self.logger.info(log_message)
 
         except Exception as e:
-            logging.error(f"Error: {e}")
+            self.logger.error(f"Error: {e}")
