@@ -26,8 +26,11 @@ Automated Database Backup:
 
 
 ### Upcoming features:
-- Additional scheduling options for yearly, weekly, and custom intervals.
-- Automation of daily backups for PostgreSQL and Microsoft SQL Server databases from one server to another.
+- Multiple Files in Mail Attachment
+- Multi-Sheet CSV Support
+- Additional Scheduling Options: Yearly, Weekly, Custom Intervals
+- Automation of Daily Backups for PostgreSQL and Microsoft SQL Server Databases
+
 
 
 ### Test environment:
