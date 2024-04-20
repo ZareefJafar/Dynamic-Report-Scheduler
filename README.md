@@ -99,7 +99,9 @@ date_time -      {trigger date time}
 
 ### Installation
 
-See **INSTALL.md**
+Refer to **INSTALL.md** for installation instructions.
 
+### Contribution
 
-If you want to contribute please read the **CONTRIBUTING.md**
+Check **CONTRIBUTING.md** to contribute. Your input is appreciated!
+
