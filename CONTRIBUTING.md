@@ -1,24 +1,55 @@
 # How to Contribute
 
-You can pick an open issue or create yourself.
+Thank you for considering contributing to our project! Whether you're picking up an existing issue or creating one yourself, your efforts are appreciated.
 
+## Steps to Contribute
 
-## Steps
+### 1. Fork the Repository
 
-## Fork this repository
+Click on the "Fork" button at the top right corner of this repository to create your own fork.
 
-1. Click on the "Fork" on the top right corner of this repository.
-2. Go to your repository forked repository and clone to your local system. `git clone https://github.com/ZareefJafar/Dynamic-Report-Scheduler.git`
+### 2. Clone the Repository
 
-## Add upstream remote repository to local git
-1. Check upstream : `git remote -v`
-2. Add upstream: `git remote add upstream https://github.com/ZareefJafar/Dynamic-Report-Scheduler.git`
+Clone your forked repository to your local system using the following command:
 
-## Commit and push to remote forked repo from local
-1. Keep up to date to upstream `git pull upstream main`  
-1. `git commit -m ‘a commit message'`
-2. Push to the forked repo: `git push origin main`
+```bash
+git clone https://github.com/YourUsername/Dynamic-Report-Scheduler.git
+```
+### 3. Add Upstream Remote
+To keep your local repository updated with the latest changes from the original repository, add an upstream remote:
+```bash
+git remote add upstream https://github.com/ZareefJafar/Dynamic-Report-Scheduler.git
+```
+See if upstream is added
+```bash
+git remote -v
+```
 
-## Create pull request to this repository.
-1.  On the top right of your project folder, GitHub will prompt you to click on a button (i.e., Compare & pull request), 
-2. Click on it, provide a description of the changes to submit the pull request (PR).
+### 4. Commit and Push Changes
+Before making any changes, ensure your local repository is up to date with the upstream:
+
+```bash
+git pull upstream
+```
+Create your feature branch
+```bash
+git checkout -b feature-x
+```
+Make your changes, commit them with a clear message:
+```bash
+git commit -m 'Your commit message'
+```
+Rebase changes from remote develop branch
+```bash
+git fetch upstream
+git rebase upstream/develop
+```
+
+Push your changes to your forked repository:
+```bash
+git push 
+```
+### 5. Create a Pull Request
+Navigate to your forked repository on GitHub. GitHub will prompt you to create a pull request. Provide a clear description of your changes and submit the pull request.
+
+Your pull request will be reviewed, and any necessary feedback will be provided. Thank you for contributing!
