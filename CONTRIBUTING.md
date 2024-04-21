@@ -13,7 +13,7 @@ Click on the "Fork" button at the top right corner of this repository to create 
 Clone your forked repository to your local system using the following command:
 
 ```bash
-git clone https://github.com/YourUsername/Dynamic-Report-Scheduler.git
+git clone https://github.com/{YourUsername}/Dynamic-Report-Scheduler.git
 ```
 ### 3. Add Upstream Remote
 To keep your local repository updated with the latest changes from the original repository, add an upstream remote:
@@ -25,31 +25,43 @@ See if upstream is added
 git remote -v
 ```
 
-### 4. Commit and Push Changes
-Before making any changes, ensure your local repository is up to date with the upstream:
-
+### 4. Develope and Commit
+Create your feature branch (e.g., feature/add-data-size, hotfix/fix-date)
 ```bash
-git pull upstream
+git checkout -b feature/feature-x
 ```
-Create your feature branch
+Stage the changes using
 ```bash
-git checkout -b feature-x
+git add .
 ```
-Make your changes, commit them with a clear message:
+Commit your changes with a clear and concise message using imperative verbs::
 ```bash
 git commit -m 'Your commit message'
 ```
-Rebase changes from remote develop branch
+
+## Pull Changes from upstream
+Pull Changes from main, develop branchs of upstream
 ```bash
-git fetch upstream
-git rebase upstream/develop
+git pull upstream main develop
 ```
 
-Push your changes to your forked repository:
+## Pull Changes from upstream
+Take the commits in your `feature-x` branch and apply them to the head of the `develop` branch.\
+It update the feature-x with latest commits of `develop`.
+
 ```bash
-git push 
+git rebase develop feature/feature-x
+```
+If conflicts arise during the rebase process, resolve them, stage the changes, and continue the rebase:
+```bash
+git add .
+git rebase --continue
+```
+Resolve conflicts and Push all changes to your forked repository:
+```bash
+git push origin feature/feature-x
 ```
 ### 5. Create a Pull Request
-Navigate to your forked repository on GitHub. GitHub will prompt you to create a pull request. Provide a clear description of your changes and submit the pull request.
+Navigate to your forked repository on GitHub and create a pull request. Mention the issue it will close (e.g., Closes issue #12)Provide a clear and detailed description of your changes, explaining the problem you're solving and the solution you're proposing.
 
-Your pull request will be reviewed, and any necessary feedback will be provided. Thank you for contributing!
+Your pull request will undergo review, and any necessary feedback will be provided. Thank you for your valuable contribution!
