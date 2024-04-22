@@ -1,5 +1,3 @@
-### **Tested in Ubuntu 20.04.6 LTS**
-
 ### Install Miniconda
 
 [Installing Miniconda on a headless Linux server](https://docs.anaconda.com/free/miniconda/#quick-command-line-install)
