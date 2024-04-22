@@ -2,51 +2,29 @@
 
 ### Install Miniconda
 
-- Create a directory where minicaonda will be installed
-```bash
-sudo mkdir -p ~/miniconda3
-```
-- Download latest miniconda
-```bash 
-sudo wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda3/miniconda.sh
-```
-- Run the install script
-```bash
-sudo bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3
-```
-- Delete the intall script
-```bash   
-sudo rm -rf ~/miniconda3/miniconda.sh
-```
-- After installing, initialize your newly-installed Miniconda
-```bash   
-sudo ~/miniconda3/bin/conda init bash
-```
+[Installing Miniconda on a headless Linux server](https://docs.anaconda.com/free/miniconda/#quick-command-line-install)
 
 ### Setting up the Conda Environment
 
-To recreate the Conda environment, follow these steps:
+Download the `requirements.yml` from the repository.
+
+Create the Conda environment named `sched` using `requirements.yml`:
 
 ```bash
 conda env create --name sched --file requirements.yml
 ```
-Go to the conda environment
+Activate the conda environment
 ```bash
 conda activate sched
 ```
 
-## To create a screen session to run the scheduler program uninterrupted
+### Runnning the Dynamic-Report-Scheduler
+onfigure `creads.db`, then execute the scheduler:
 
-Create screen named `sched_v1`
 ```bash
-screen -S sched_v1
+python3 reportSchedulerPython.py
 ```
-See all screen
-```bash
-screen -ls
-```
-Attach to the ```sched_v1``` named screen session
-```bash
-screen -r sched_v1
-```
+
+### (Optional) To run as a 24/7 service in linux
+[Creating Services](https://www.baeldung.com/linux/create-remove-systemd-services)
 
