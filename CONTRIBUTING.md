@@ -1,6 +1,6 @@
 # How to Contribute
 
-Thank you for considering contributing to our project! Whether you're picking up an existing issue or creating one yourself, your efforts are appreciated.
+Thank you for considering contributing to our project! your efforts are appreciated.
 
 ## Steps to Contribute
 
@@ -45,7 +45,7 @@ Pull Changes from main, develop branchs of upstream
 git pull upstream main develop
 ```
 
-## Pull Changes from upstream
+## Rebase Your Branch
 Take the commits in your `feature-x` branch and apply them to the head of the `develop` branch.\
 It update the feature-x with latest commits of `develop`.
 
@@ -62,6 +62,10 @@ Resolve conflicts and Push all changes to your forked repository:
 git push origin feature/feature-x
 ```
 ### 5. Create a Pull Request
-Navigate to your forked repository on GitHub and create a pull request. Mention the issue it will close (e.g., Closes issue #12)Provide a clear and detailed description of your changes, explaining the problem you're solving and the solution you're proposing.
+Navigate to your forked repository on GitHub and create a pull request. 
+
+- Select feature branch as source to the develop branch of remote as destination. 
+- Mention the issue it will close (e.g., Closes issue #12)
+- Provide a clear and detailed description of your changes, explaining the problem you're solving and the solution you're proposing.
 
 Your pull request will undergo review, and any necessary feedback will be provided. Thank you for your valuable contribution!
