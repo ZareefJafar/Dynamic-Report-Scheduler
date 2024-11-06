@@ -1,6 +1,9 @@
 # Dynamic-Report-Scheduler
-
 Scheduling report generation and automatic delivery.
+
+In financial institutions, daily and monthly reports are essential for reconciliation and operational oversight. Reconciliation is the process of verifying and matching financial records, such as transactions or balances, to ensure they are accurate and consistent across different systems or ledgers. This is a critical task for ensuring financial accuracy, detecting errors, and maintaining compliance.
+
+Service-wise data, especially from the previous day or month, is frequently required for reconciliation to confirm that all transactions and balances align properly. The Dynamic Report Scheduler automates the generation and distribution of these reports, streamlining data delivery to various stakeholders and reducing manual workload.
 
 ### Features:
 
