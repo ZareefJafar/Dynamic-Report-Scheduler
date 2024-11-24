@@ -1,6 +1,6 @@
 # How to Contribute
 
-Thank you for considering contributing to our project! your efforts are appreciated.
+Thank you for considering contributing to our project! We follow the [Forking workflow](https://www.atlassian.com/git/tutorials/comparing-workflows/forking-workflow) for managing contributions. For a detailed example of this workflow in action, check out this excellent guide by the [Flatiron Institute](https://flatironinstitute.github.io/sciware-git-collaborative/03-distributed/)
 
 ## Steps to Contribute
 
